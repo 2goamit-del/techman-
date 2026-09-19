@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Nova — software tracks for tech students</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1210;
+    --bg-panel:#141B18;
+    --bg-raised:#1A2320;
+    --ink:#EDEAE1;
+    --muted:#93A197;
+    --faint:#5E6B62;
+    --accent:#C9A24B;
+    --accent-ink:#14110E;
+    --teal:#4FA8A0;
+    --border:#26302B;
+    --border-strong:#38443D;
+    --danger:#D8735A;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.55;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 28px;}
+  a{color:var(--teal);}
+  h1,h2,h3{font-family:'Fraunces', serif;font-weight:500;margin:0;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* header */
+  header{padding:28px 0;border-bottom:1px solid var(--border);}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand-mark{font-family:'Fraunces',serif;font-size:22px;font-weight:600;letter-spacing:0.01em;}
+  .brand-tag{color:var(--faint);font-size:13px;}
+  nav{display:flex;gap:24px;font-size:14px;}
+  nav a{color:var(--muted);text-decoration:none;}
+  nav a:hover{color:var(--ink);}
+
+  /* hero */
+  .hero{padding:76px 0 64px;display:grid;grid-template-columns:1.15fr 0.85fr;gap:56px;align-items:center;}
+  .hero h1{font-size:44px;line-height:1.16;letter-spacing:-0.01em;}
+  .hero p.lede{color:var(--muted);font-size:17px;max-width:46ch;margin-top:20px;}
+  .hero-stats{display:flex;gap:32px;margin-top:32px;}
+  .stat .num{font-family:'Fraunces',serif;font-size:26px;color:var(--accent);}
+  .stat .label{font-size:12.5px;color:var(--faint);margin-top:2px;}
+  .hero-actions{margin-top:34px;display:flex;gap:14px;}
+  .btn{
+    font-family:'IBM Plex Sans',sans-serif;font-size:14.5px;font-weight:500;
+    padding:12px 22px;border-radius:3px;text-decoration:none;cursor:pointer;
+    border:1px solid transparent;display:inline-block;
+  }
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-primary:hover{background:#dcb15b;}
+  .btn-ghost{border-color:var(--border-strong);color:var(--ink);background:transparent;}
+  .btn-ghost:hover{border-color:var(--muted);}
+
+  /* terminal panel */
+  .term{
+    background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;
+    overflow:hidden;
+  }
+  .term-bar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:6px;}
+  .term-dot{width:9px;height:9px;border-radius:50%;background:var(--border-strong);}
+  .term-body{padding:20px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);min-height:180px;}
+  .term-body .prompt{color:var(--teal);}
+  .term-line{white-space:pre-wrap;}
+  .cursor{display:inline-block;width:7px;height:14px;background:var(--accent);vertical-align:-2px;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* section shared */
+  section{padding:64px 0;border-top:1px solid var(--border);}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:36px;}
+  .section-head h2{font-size:28px;}
+  .section-head p{color:var(--muted);font-size:14.5px;max-width:40ch;margin-top:8px;}
+
+  /* tracks list */
+  .track{
+    border-top:1px solid var(--border);
+  }
+  .track:last-child{border-bottom:1px solid var(--border);}
+  .track summary{
+    list-style:none;cursor:pointer;padding:22px 0;
+    display:grid;grid-template-columns:36px 1fr auto auto;gap:18px;align-items:center;
+  }
+  .track summary::-webkit-details-marker{display:none;}
+  .track-index{font-family:'IBM Plex Mono',monospace;color:var(--faint);font-size:13px;}
+  .track-name{font-size:18px;font-weight:500;}
+  .track-format{font-size:12.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+  .track-chevron{color:var(--faint);transition:transform .15s ease;font-size:14px;}
+  .track[open] .track-chevron{transform:rotate(45deg);}
+  .track-body{padding:0 0 28px 54px;display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  .track-body p.desc{grid-column:1 / -1;color:var(--muted);font-size:14.5px;max-width:64ch;margin:0 0 6px;}
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;}
+  .meta-item .k{font-size:11.5px;color:var(--faint);}
+  .meta-item .v{font-size:14px;margin-top:2px;}
+  .builds{}
+  .builds .k{font-size:11.5px;color:var(--faint);margin-bottom:6px;}
+  .builds ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink);}
+  .builds li{margin-bottom:4px;}
+  .track-body .apply-link{margin-top:16px;grid-column:1/-1;}
+  .apply-link a{font-size:13.5px;font-weight:500;text-decoration:none;color:var(--accent);}
+
+  /* application form */
+  .app-panel{background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:36px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  .field input,.field select,.field textarea{
+    width:100%;background:var(--bg);border:1px solid var(--border-strong);color:var(--ink);
+    padding:10px 12px;border-radius:3px;font-family:'IBM Plex Sans',sans-serif;font-size:14.5px;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);}
+  .field textarea{resize:vertical;min-height:90px;}
+  .field-error{color:var(--danger);font-size:12.5px;margin-top:5px;display:none;}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--danger);}
+  .field.invalid .field-error{display:block;}
+  .submit-row{display:flex;align-items:center;gap:16px;margin-top:8px;}
+  .form-note{font-size:12.5px;color:var(--faint);}
+  .confirm{
+    display:none;border:1px solid var(--teal);background:rgba(79,168,160,0.08);
+    padding:18px 20px;border-radius:4px;margin-bottom:22px;font-size:14.5px;
+  }
+  .confirm.show{display:block;}
+
+  /* status list */
+  .status-list{margin-top:44px;}
+  .status-list h3{font-size:15px;color:var(--muted);font-weight:500;margin-bottom:14px;}
+  .status-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:13px 0;border-top:1px solid var(--border);font-size:14px;
+  }
+  .status-row:last-child{border-bottom:1px solid var(--border);}
+  .status-track{color:var(--muted);font-size:12.5px;}
+  .status-pill{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:4px 9px;border-radius:3px;
+    background:rgba(201,162,75,0.12);color:var(--accent);border:1px solid rgba(201,162,75,0.3);
+  }
+  .empty-note{color:var(--faint);font-size:13.5px;}
+
+  footer{border-top:1px solid var(--border);padding:32px 0;color:var(--faint);font-size:13px;}
+  footer .wrap{display:flex;justify-content:space-between;}
+
+  @media (max-width:760px){
+    .hero{grid-template-columns:1fr;padding-top:48px;}
+    .hero h1{font-size:34px;}
+    .track summary{grid-template-columns:24px 1fr auto;}
+    .track-format{display:none;}
+    .track-body{grid-template-columns:1fr;padding-left:0;}
+    .meta-grid{grid-template-columns:1fr 1fr;}
+    .field-row{grid-template-columns:1fr;}
+    .app-panel{padding:24px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <span class="brand-mark">Tech Nova</span>
+      <span class="brand-tag">applied software tracks</span>
+    </div>
+    <nav>
+      <a href="#tracks">Tracks</a>
+      <a href="#apply">Apply</a>
+      <a href="#status">My applications</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero" style="border-top:none;padding-bottom:64px;">
+    <div>
+      <h1>Six ways into software,<br>one application.</h1>
+      <p class="lede">Tech Nova runs cohort-based tracks for students who want to build production software before they graduate — not tutorials, a real codebase with a team and a deadline.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="num">6</div><div class="label">active tracks</div></div>
+        <div class="stat"><div class="num">14wk</div><div class="label">typical cohort</div></div>
+        <div class="stat"><div class="num">18</div><div class="label">seats per track</div></div>
+      </div>
+      <div class="hero-actions">
+        <a href="#tracks" class="btn btn-primary">See the tracks</a>
+        <a href="#apply" class="btn btn-ghost">Apply now</a>
+      </div>
+    </div>
+    <div class="term">
+      <div class="term-bar"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div></div>
+      <div class="term-body" id="termBody">
+        <div class="term-line"><span class="prompt">$</span> technova status --student</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="tracks">
+    <div class="section-head">
+      <div>
+        <h2>Software tracks</h2>
+        <p>Open one to see the format, prerequisites, and what the cohort ships.</p>
+      </div>
+    </div>
+
+    <details class="track" id="track-0">
+      <summary>
+        <span class="track-index">01</span>
+        <span class="track-name">Backend systems engineering</span>
+        <span class="track-format">remote · 14 weeks</span>
+        <span class="track-chevron">+</span>
+      </summary>
+      <div class="track-body">
+        <p class="desc">Design and operate services under real load: API design, data modeling, queues, and the failure modes that only show up once other people depend on your code.</p>
+        <div class="meta-grid">
+          <div class="meta-item"><div class="k">Format</div><div class="v">Remote, 8 hrs/week</div></div>
+          <div class="meta-item"><div class="k">Duration</div><div class="v">14 weeks</div></div>
+          <div class="meta-item"><div class="k">Next cohort</div><div class="v">Jan 12, 2027</div></div>
+          <div class="meta-item"><div class="k">Prerequisites</div><div class="v">One semester of a backend language, comfort with SQL</div></div>
+        </div>
+        <div class="builds">
+          <div class="k">The cohort ships</div>
+          <ul>
+            <li>A multi-tenant API with auth, rate limiting, and background jobs</li>
+            <li>A load test report and a postmortem for one induced failure</li>
+          </ul>
+        </div>
+        <div class="apply-link"><a href="#apply" onclick="preselect('Backend systems engineering')">Apply to this track →</a></div>
+      </div>
+    </details>
+
+    <details class="track" id="track-1">
+      <summary>
+        <span class="track-index">02</span>
+        <span class="track-name">Frontend and interface engineering</span>
+        <span class="track-format">hybrid · 12 weeks</span>
+        <span class="track-chevron">+</span>
+      </summary>
+      <div class="track-body">
+        <p class="desc">Take a design spec to a shipped interface: component architecture, state management, accessibility, and the performance budget that keeps it fast on real devices.</p>
+        <div class="meta-grid">
+          <div class="meta-item"><div class="k">Format</div><div class="v">Hybrid, one campus day/week</div></div>
+          <div class="meta-item"><div class="k">Duration</div><div class="v">12 weeks</div></div>
+          <div class="meta-item"><div class="k">Next cohort</div><div class="v">Feb 2, 2027</div></div>
+          <div class="meta-item"><div class="k">Prerequisites</div><div class="v">JavaScript fundamentals, one prior UI project</div></div>
+        </div>
+        <div class="builds">
+          <div class="k">The cohort ships</div>
+          <ul>
+            <li>A component library used across three student projects</li>
+            <li>An accessibility audit of a partner nonprofit's site</li>
+          </ul>
+        </div>
+        <div class="apply-link"><a href="#apply" onclick="preselect('Frontend and interface engineering')">Apply to this track →</a></div>
+      </div>
+    </details>
+
+    <details class="track" id="track-2">
+      <summary>
+        <span class="track-index">03</span>
+        <span class="track-name">Data engineering and pipelines</span>
+        <span class="track-format">remote · 14 weeks</span>
+        <span class="track-chevron">+</span>
+      </summary>
+      <div class="track-body">
+        <p class="desc">Move data reliably: ingestion, transformation, and the monitoring that tells you when a pipeline is quietly wrong instead of loudly broken.</p>
+        <div class="meta-grid">
+          <div class="meta-item"><div class="k">Format</div><div class="v">Remote, 8 hrs/week</div></div>
+          <div class="meta-item"><div class="k">Duration</div><div class="v">14 weeks</div></div>
+          <div class="meta-item"><div class="k">Next cohort</div><div class="v">Jan 12, 2027</div></div>
+          <div class="meta-item"><div class="k">Prerequisites</div><div class="v">Python, basic SQL, one stats course</div></div>
+        </div>
+        <div class="builds">
+          <div class="k">The cohort ships</div>
+          <ul>
+            <li>An end-to-end pipeline with scheduling and data-quality checks</li>
+            <li>A dashboard built on the pipeline's output</li>
+          </ul>
+        </div>
+        <div class="apply-link"><a href="#apply" onclick="preselect('Data engineering and pipelines')">Apply to this track →</a></div>
+      </div>
+    </details>
+
+    <details class="track" id="track-3">
+      <summary>
+        <span class="track-index">04</span>
+        <span class="track-name">Mobile engineering</span>
+        <span class="track-format">remote · 12 weeks</span>
+        <span class="track-chevron">+</span>
+      </summary>
+      <div class="track-body">
+        <p class="desc">Build for iOS and Android from one codebase: offline state, push notifications, and the release process that gets an app through app-store review.</p>
+        <div class="meta-grid">
+          <div class="meta-item"><div class="k">Format</div><div class="v">Remote, 8 hrs/week</div></div>
+          <div class="meta-item"><div class="k">Duration</div><div class="v">12 weeks</div></div>
+          <div class="meta-item"><div class="k">Next cohort</div><div class="v">Feb 2, 2027</div></div>
+          <div class="meta-item"><div class="k">Prerequisites</div><div class="v">One object-oriented language, no mobile experience required</div></div>
+        </div>
+        <div class="builds">
+          <div class="k">The cohort ships</div>
+          <ul>
+            <li>A cross-platform app published to a TestFlight/Play internal track</li>
+            <li>A crash-free-rate report from real device testing</li>
+          </ul>
+        </div>
+        <div class="apply-link"><a href="#apply" onclick="preselect('Mobile engineering')">Apply to this track →</a></div>
+      </div>
+    </details>
+
+    <details class="track" id="track-4">
+      <summary>
+        <span class="track-index">05</span>
+        <span class="track-name">Cloud infrastructure and DevOps</span>
+        <span class="track-format">remote · 10 weeks</span>
+        <span class="track-chevron">+</span>
+      </summary>
+      <div class="track-body">
+        <p class="desc">Automate the path from commit to production: containers, CI/CD, infrastructure as code, and the on-call rotation that teaches you what "reliable" actually costs.</p>
+        <div class="meta-grid">
+          <div class="meta-item"><div class="k">Format</div><div class="v">Remote, 6 hrs/week</div></div>
+          <div class="meta-item"><div class="k">Duration</div><div class="v">10 weeks</div></div>
+          <div class="meta-item"><div class="k">Next cohort</div><div class="v">Mar 9, 2027</div></div>
+          <div class="meta-item"><div class="k">Prerequisites</div><div class="v">Command-line comfort, basic networking</div></div>
+        </div>
+        <div class="builds">
+          <div class="k">The cohort ships</div>
+          <ul>
+            <li>A CI/CD pipeline deploying a shared student app</li>
+            <li>An infrastructure-as-code repo with a documented rollback plan</li>
+          </ul>
+        </div>
+        <div class="apply-link"><a href="#apply" onclick="preselect('Cloud infrastructure and DevOps')">Apply to this track →</a></div>
+      </div>
+    </details>
+
+    <details class="track" id="track-5">
+      <summary>
+        <span class="track-index">06</span>
+        <span class="track-name">Machine learning engineering</span>
+        <span class="track-format">hybrid · 16 weeks</span>
+        <span class="track-chevron">+</span>
+      </summary>
+      <div class="track-body">
+        <p class="desc">Take a model past the notebook: data pipelines, training infrastructure, evaluation, and serving it behind an API that other services can actually call.</p>
+        <div class="meta-grid">
+          <div class="meta-item"><div class="k">Format</div><div class="v">Hybrid, one campus day/week</div></div>
+          <div class="meta-item"><div class="k">Duration</div><div class="v">16 weeks</div></div>
+          <div class="meta-item"><div class="k">Next cohort</div><div class="v">Feb 2, 2027</div></div>
+          <div class="meta-item"><div class="k">Prerequisites</div><div class="v">Linear algebra, Python, one ML course</div></div>
+        </div>
+        <div class="builds">
+          <div class="k">The cohort ships</div>
+          <ul>
+            <li>A trained model served behind a production inference endpoint</li>
+            <li>An evaluation report covering accuracy, latency, and drift</li>
+          </ul>
+        </div>
+        <div class="apply-link"><a href="#apply" onclick="preselect('Machine learning engineering')">Apply to this track →</a></div>
+      </div>
+    </details>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="apply">
+    <div class="section-head">
+      <div>
+        <h2>Apply</h2>
+        <p>Applications are reviewed on a rolling basis. Most students hear back within two weeks.</p>
+      </div>
+    </div>
+
+    <div class="app-panel">
+      <div class="confirm" id="confirmBox"></div>
+      <form id="appForm" novalidate>
+        <div class="field-row">
+          <div class="field" id="f-name">
+            <label for="in-name">Full name</label>
+            <input type="text" id="in-name" placeholder="Jordan Nguyen">
+            <div class="field-error">Enter your name.</div>
+          </div>
+          <div class="field" id="f-email">
+            <label for="in-email">Email</label>
+            <input type="email" id="in-email" placeholder="jordan@university.edu">
+            <div class="field-error">Enter a valid email.</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" id="f-school">
+            <label for="in-school">School</label>
+            <input type="text" id="in-school" placeholder="University name">
+            <div class="field-error">Enter your school.</div>
+          </div>
+          <div class="field" id="f-year">
+            <label for="in-year">Year</label>
+            <select id="in-year">
+              <option value="">Select year</option>
+              <option>First year</option>
+              <option>Second year</option>
+              <option>Third year</option>
+              <option>Fourth year</option>
+              <option>Graduate student</option>
+            </select>
+            <div class="field-error">Select your year.</div>
+          </div>
+        </div>
+        <div class="field" id="f-track">
+          <label for="in-track">Track</label>
+          <select id="in-track">
+            <option value="">Select a track</option>
+            <option>Backend systems engineering</option>
+            <option>Frontend and interface engineering</option>
+            <option>Data engineering and pipelines</option>
+            <option>Mobile engineering</option>
+            <option>Cloud infrastructure and DevOps</option>
+            <option>Machine learning engineering</option>
+          </select>
+          <div class="field-error">Select a track.</div>
+        </div>
+        <div class="field" id="f-link">
+          <label for="in-link">GitHub or portfolio link</label>
+          <input type="text" id="in-link" placeholder="github.com/yourname">
+          <div class="field-error">Add a link so reviewers can see your work.</div>
+        </div>
+        <div class="field" id="f-why">
+          <label for="in-why">Why this track, in a few sentences</label>
+          <textarea id="in-why" placeholder="What you've built, what you want to build next, and why this track fits."></textarea>
+          <div class="field-error">Tell us a little about why this track fits.</div>
+        </div>
+        <div class="submit-row">
+          <button type="submit" class="btn btn-primary">Submit application</button>
+          <span class="form-note">Stored only in this browser for this demo.</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="status-list" id="status">
+      <h3>Recent applications</h3>
+      <p class="form-note" style="margin-bottom:14px;">Visible to anyone on this site.</p>
+      <div id="statusRows"></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Tech Nova</span>
+    <span>rolling admissions · six tracks</span>
+  </div>
+</footer>
+
+<script>
+  function preselect(name){
+    document.getElementById('in-track').value = name;
+  }
+
+  function fieldsMap(){
+    return {
+      'f-name': {el: document.getElementById('in-name'), test: v => v.trim().length > 0},
+      'f-email': {el: document.getElementById('in-email'), test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())},
+      'f-school': {el: document.getElementById('in-school'), test: v => v.trim().length > 0},
+      'f-year': {el: document.getElementById('in-year'), test: v => v.trim().length > 0},
+      'f-track': {el: document.getElementById('in-track'), test: v => v.trim().length > 0},
+      'f-link': {el: document.getElementById('in-link'), test: v => v.trim().length > 0},
+      'f-why': {el: document.getElementById('in-why'), test: v => v.trim().length > 0}
+    };
+  }
+
+  async function loadApplications(){
+    const rowsEl = document.getElementById('statusRows');
+    try{
+      const listRes = await window.storage.list('application:', true);
+      const keys = (listRes && listRes.keys) || [];
+      if(keys.length === 0){
+        rowsEl.innerHTML = '<p class="empty-note">No applications submitted yet.</p>';
+        return;
+      }
+      const items = [];
+      for(const k of keys){
+        try{
+          const r = await window.storage.get(k, true);
+          if(r && r.value) items.push(JSON.parse(r.value));
+        }catch(e){}
+      }
+      items.sort((a,b) => b.submittedAt - a.submittedAt);
+      rowsEl.innerHTML = items.slice(0, 25).map(function(a){
+        return '<div class="status-row"><div><div>'+escapeHtml(a.name)+'</div><div class="status-track">'+escapeHtml(a.track)+' · '+escapeHtml(a.school)+'</div></div><div class="status-pill">submitted</div></div>';
+      }).join('');
+    }catch(e){
+      rowsEl.innerHTML = '<p class="empty-note">No applications submitted yet.</p>';
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  document.getElementById('appForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const fields = fieldsMap();
+    let valid = true;
+    const values = {};
+    Object.keys(fields).forEach(function(id){
+      const f = fields[id];
+      const wrap = document.getElementById(id);
+      const val = f.el.value;
+      values[id] = val;
+      if(!f.test(val)){
+        wrap.classList.add('invalid');
+        valid = false;
+      } else {
+        wrap.classList.remove('invalid');
+      }
+    });
+    if(!valid) return;
+
+    const app = {
+      name: values['f-name'],
+      email: values['f-email'],
+      school: values['f-school'],
+      year: values['f-year'],
+      track: values['f-track'],
+      link: values['f-link'],
+      why: values['f-why'],
+      submittedAt: Date.now()
+    };
+
+    const key = 'application:' + app.submittedAt + '-' + Math.floor(Math.random()*10000);
+    try{
+      await window.storage.set(key, JSON.stringify(app), false);
+    }catch(err){
+      console.error('Storage error', err);
+    }
+
+    const confirmBox = document.getElementById('confirmBox');
+    confirmBox.textContent = 'Application received for ' + app.track + '. Confirmation sent to ' + app.email + '.';
+    confirmBox.classList.add('show');
+    document.getElementById('appForm').reset();
+    Object.keys(fields).forEach(function(id){ document.getElementById(id).classList.remove('invalid'); });
+    loadApplications();
+  });
+
+  Object.values(fieldsMap()).forEach(function(f){
+    f.el.addEventListener('input', function(){
+      const wrap = f.el.closest('.field');
+      if(f.test(f.el.value)) wrap.classList.remove('invalid');
+    });
+  });
+
+  loadApplications();
+
+  var termLines = [
+    '$ technova tracks --list',
+    '01 backend-systems       14wk  remote',
+    '02 frontend-interface    12wk  hybrid',
+    '03 data-engineering      14wk  remote',
+    '04 mobile-engineering    12wk  remote',
+    '05 cloud-devops          10wk  remote',
+    '06 ml-engineering        16wk  hybrid',
+    '',
+    '$ technova apply --track=<pick one below>'
+  ];
+  var termBody = document.getElementById('termBody');
+  var li = 0, ci = 0;
+  function typeTerm(){
+    if(li >= termLines.length){
+      termBody.innerHTML += '<span class="cursor"></span>';
+      return;
+    }
+    var line = termLines[li];
+    if(ci === 0){
+      var div = document.createElement('div');
+      div.className = 'term-line';
+      div.id = 'tl-' + li;
+      termBody.appendChild(div);
+    }
+    var div = document.getElementById('tl-' + li);
+    if(ci <= line.length){
+      var prefix = line.startsWith('$') ? '<span class="prompt">$</span>' + line.slice(1, ci) : line.slice(0, ci);
+      div.innerHTML = prefix;
+      ci++;
+      setTimeout(typeTerm, line.length ? 14 : 4);
+    } else {
+      li++; ci = 0;
+      setTimeout(typeTerm, 90);
+    }
+  }
+  typeTerm();
+</script>
+
+</body>
+</html>
